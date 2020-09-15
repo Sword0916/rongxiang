@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BusMessageMapper">
+
+    <resultMap type="BusMessage" id="BusMessageResult">
+        <result property="messageId" column="message_id"/>
+        <result property="bidId" column="bid_id"/>
+        <result property="messageName" column="message_name"/>
+        <result property="messagePhone" column="message_phone"/>
+        <result property="messagePrice" column="message_price"/>
+        <result property="messageAddress" column="message_address"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectBusMessageVo">
+        select message_id, bid_id, message_name, message_phone, message_price, message_address, remark, create_time from bus_message
+    </sql>
+
+    <select id="selectBusMessageList" parameterType="BusMessage" resultMap="BusMessageResult">
+        <include refid="selectBusMessageVo"/>
+        <where>
+            <if test="bidId != null ">and bid_id = #{bidId}</if>
+            <if test="messageName != null  and messageName != ''">and message_name like concat('%',
+                #{messageName},'%')
+            </if>
+            <if test="messagePhone != null  and messagePhone != ''">and message_phone like concat('%',
+                #{messagePhone},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectBusMessageById" parameterType="Long" resultMap="BusMessageResult">
+        <include refid="selectBusMessageVo"/>
+        where message_id = #{messageId}
+    </select>
+
+    <insert id="insertBusMessage" parameterType="BusMessage" useGeneratedKeys="true" keyProperty="messageId">
+        insert into bus_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bidId != null">bid_id,</if>
+            <if test="messageName != null">message_name,</if>
+            <if test="messagePhone != null">message_phone,</if>
+            <if test="messagePrice != null">message_price,</if>
+            <if test="messageAddress != null">message_address,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bidId != null">#{bidId},</if>
+            <if test="messageName != null">#{messageName},</if>
+            <if test="messagePhone != null">#{messagePhone},</if>
+            <if test="messagePrice != null">#{messagePrice},</if>
+            <if test="messageAddress != null">#{messageAddress},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBusMessage" parameterType="BusMessage">
+        update bus_message
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bidId != null">bid_id = #{bidId},</if>
+            <if test="messageName != null">message_name = #{messageName},</if>
+            <if test="messagePhone != null">message_phone = #{messagePhone},</if>
+            <if test="messagePrice != null">message_price = #{messagePrice},</if>
+            <if test="messageAddress != null">message_address = #{messageAddress},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where message_id = #{messageId}
+    </update>
+
+    <delete id="deleteBusMessageById" parameterType="Long">
+        delete from bus_message where message_id = #{messageId}
+    </delete>
+
+    <delete id="deleteBusMessageByIds" parameterType="String">
+        delete from bus_message where message_id in
+        <foreach item="messageId" collection="array" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+    </delete>
+
+</mapper>

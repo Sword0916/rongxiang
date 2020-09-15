@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BusConstructMapper">
+
+    <resultMap type="BusConstruct" id="BusConstructResult">
+        <result property="conId" column="con_id"/>
+        <result property="conType" column="con_type"/>
+        <result property="conTitle" column="con_title"/>
+        <result property="conSummary" column="con_summary"/>
+        <result property="conContent" column="con_content"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectBusConstructVo">
+        select con_id, con_type, con_title, con_summary, con_content, create_by, create_time, update_by, update_time from bus_construct
+    </sql>
+
+    <select id="selectBusConstructList" parameterType="BusConstruct" resultMap="BusConstructResult">
+        select con_id, con_type, con_title, con_summary, create_by, create_time, update_by, update_time from bus_construct
+        <where>
+            <if test="conType != null  and conType != ''">and con_type = #{conType}</if>
+            <if test="conTitle != null  and conTitle != ''">and con_title like concat('%', #{conTitle}, '%')</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectBusConstructById" parameterType="Long" resultMap="BusConstructResult">
+        <include refid="selectBusConstructVo"/>
+        where con_id = #{conId}
+    </select>
+
+    <insert id="insertBusConstruct" parameterType="BusConstruct" useGeneratedKeys="true" keyProperty="conId">
+        insert into bus_construct
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="conType != null and conType != ''">con_type,</if>
+            <if test="conTitle != null and conTitle != ''">con_title,</if>
+            <if test="conSummary != null">con_summary,</if>
+            <if test="conContent != null and conContent != ''">con_content,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="conType != null and conType != ''">#{conType},</if>
+            <if test="conTitle != null and conTitle != ''">#{conTitle},</if>
+            <if test="conSummary != null">#{conSummary},</if>
+            <if test="conContent != null and conContent != ''">#{conContent},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBusConstruct" parameterType="BusConstruct">
+        update bus_construct
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="conType != null and conType != ''">con_type = #{conType},</if>
+            <if test="conTitle != null and conTitle != ''">con_title = #{conTitle},</if>
+            <if test="conSummary != null">con_summary = #{conSummary},</if>
+            <if test="conContent != null and conContent != ''">con_content = #{conContent},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where con_id = #{conId}
+    </update>
+
+    <delete id="deleteBusConstructById" parameterType="Long">
+        delete from bus_construct where con_id = #{conId}
+    </delete>
+
+    <delete id="deleteBusConstructByIds" parameterType="String">
+        delete from bus_construct where con_id in
+        <foreach item="conId" collection="array" open="(" separator="," close=")">
+            #{conId}
+        </foreach>
+    </delete>
+
+</mapper>

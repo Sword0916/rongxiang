@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.BusBidMapper">
+
+    <resultMap type="BusBid" id="BusBidResult">
+        <result property="bidId" column="bid_id"/>
+        <result property="bidType" column="bid_type"/>
+        <result property="bidTitle" column="bid_title"/>
+        <result property="bidSummary" column="bid_summary"/>
+        <result property="bidContent" column="bid_content"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectBusBidVo">
+        select bid_id, bid_type, bid_title, bid_summary, bid_content, create_by, create_time, update_by, update_time from bus_bid
+    </sql>
+
+    <select id="selectBusBidList" parameterType="BusBid" resultMap="BusBidResult">
+        select bid_id, bid_type, bid_title, bid_summary, create_by, create_time, update_by, update_time from bus_bid
+        <where>
+            <if test="bidType != null  and bidType != ''">and bid_type = #{bidType}</if>
+            <if test="bidTitle != null  and bidTitle != ''">and bid_title like concat('%', #{bidTitle}, '%')</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectBusBidById" parameterType="Long" resultMap="BusBidResult">
+        <include refid="selectBusBidVo"/>
+        where bid_id = #{bidId}
+    </select>
+
+    <insert id="insertBusBid" parameterType="BusBid" useGeneratedKeys="true" keyProperty="bidId">
+        insert into bus_bid
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bidType != null and bidType != ''">bid_type,</if>
+            <if test="bidTitle != null and bidTitle != ''">bid_title,</if>
+            <if test="bidSummary != null">bid_summary,</if>
+            <if test="bidContent != null and bidContent != ''">bid_content,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bidType != null and bidType != ''">#{bidType},</if>
+            <if test="bidTitle != null and bidTitle != ''">#{bidTitle},</if>
+            <if test="bidSummary != null">#{bidSummary},</if>
+            <if test="bidContent != null and bidContent != ''">#{bidContent},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBusBid" parameterType="BusBid">
+        update bus_bid
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bidType != null and bidType != ''">bid_type = #{bidType},</if>
+            <if test="bidTitle != null and bidTitle != ''">bid_title = #{bidTitle},</if>
+            <if test="bidSummary != null">bid_summary = #{bidSummary},</if>
+            <if test="bidContent != null and bidContent != ''">bid_content = #{bidContent},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where bid_id = #{bidId}
+    </update>
+
+    <delete id="deleteBusBidById" parameterType="Long">
+        delete from bus_bid where bid_id = #{bidId}
+    </delete>
+
+    <delete id="deleteBusBidByIds" parameterType="String">
+        delete from bus_bid where bid_id in
+        <foreach item="bidId" collection="array" open="(" separator="," close=")">
+            #{bidId}
+        </foreach>
+    </delete>
+
+</mapper>
